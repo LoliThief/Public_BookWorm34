@@ -99,6 +99,8 @@ def start(message):
                     send_actions = False
                 else:
                     bot.send_message(message.chat.id, f'Значение {mtext[1]}, успешно изменено на {send_actions}')
+            elif (mtext[1] == 'help'):
+                bot.send_message(message.chat.id, 'Parameters of "/set" \nsave_pdf[1, 0]\nnumber_of_books[0, 100]\nfast_mode[1, 0]\nsend_actions[1, 0]\n')
             else:
                 bot.send_message(message.chat.id, 'unknown parameter of "/set" ')
     except:
