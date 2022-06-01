@@ -1,7 +1,7 @@
 # PIP libraries
 import pdfminer.high_level
-from borb.pdf.canvas.color.color import HexColor
 import borb
+from borb.pdf.canvas.color.color import HexColor
 from borb.pdf.page.page import Page
 from borb.pdf.pdf import PDF
 
