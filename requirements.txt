@@ -1,6 +1,9 @@
-os
 random
-telebot
-pdfminer.high_level
+pdfminer
 borb
-install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
+google.oauth2
+googleapiclient
+pdfminer2
+pdfminer.six
+pyTelegramBotAPI
+pathlib

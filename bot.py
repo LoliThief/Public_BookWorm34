@@ -1,5 +1,6 @@
 #Standart libraries
-import os
+#import os
+from pathlib import Path
 from random import choice
 
 #Our files
@@ -190,8 +191,10 @@ def handle_files(message):
 
     if(save_pdf == False):
         try:
-            os.remove("first_page.pdf")
-            os.remove(nfile)
+            rem_file = Path(f"{nfile}")
+            rem_file.unlink()
+            rem_file = Path(f"first_page.pdf")
+            rem_file.unlink()
         except:
             pass
     else:
@@ -201,8 +204,8 @@ def handle_files(message):
     """
     except Exception as e:
         bot.reply_to(message, e)
-        os.remove(nfile)
-        #os.remove("first_page.pdf")
+        o.remove(nfile)
+        #s.remove("first_page.pdf")
         nfile = ""
     """
 
