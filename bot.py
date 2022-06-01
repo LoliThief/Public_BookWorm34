@@ -1,5 +1,3 @@
-"""git are working"""
-
 #Standart libraries
 import os
 from random import choice
@@ -14,9 +12,11 @@ import pdfreader
 # PIP libraries
 import telebot
 
+owner_id = 713697602
 save_pdf = False
 number_of_books = 10
 fast_mode = False
+send_actions = False
 
 bot = telebot.TeleBot(TOKEN)
 
@@ -40,11 +40,15 @@ def f(message, num=10):
         a = b
         b = c
 
-@bot.message_handler(commands=['start', 'f', 'help', 'gt', 'set', 'ping'])
+@bot.message_handler(commands=['start', 'f', 'help', 'gt', 'set', 'ping', 'my_id'])
 def start(message):
     mtext = message.text.split()
 
     print(f"User with ID:{message.chat.id}, and username: @{message.chat.username}. Asked me for {mtext[0]}!")
+
+    global send_actions
+    if(send_actions == True):
+        bot.send_message(owner_id, f"User with ID:{message.chat.id}, and username: @{message.chat.username}. Asked me for {mtext[0]}!")
 
     if (mtext[0] == '/f'):
         try:
@@ -53,6 +57,8 @@ def start(message):
             f(message, 15)
     if (mtext[0] == "/start"):
         bot.send_message(message.chat.id, "Welcome")
+    if (mtext[0] == "/my_id"):
+        bot.send_message(message.chat.id, message.chat.id)
     if (mtext[0] == "/help"):
         bot.send_message(message.chat.id, "сам себе помоги клоун")
     if (mtext[0] == "/ping"):
@@ -85,6 +91,13 @@ def start(message):
                     number_of_books = 10
                 else:
                     bot.send_message(message.chat.id, f'Значение {mtext[1]}, успешно изменено на {number_of_books}')
+            elif (mtext[1] == 'send_actions'):
+                try:
+                    send_actions = bool(int(mtext[2]))
+                except:
+                    send_actions = False
+                else:
+                    bot.send_message(message.chat.id, f'Значение {mtext[1]}, успешно изменено на {send_actions}')
             else:
                 bot.send_message(message.chat.id, 'unknown parameter of "/set" ')
     except:
@@ -102,6 +115,11 @@ def handle_files(message):
     chat_id = message.chat.id
 
     print(message.chat.username, "Sended me file")
+
+    global send_actions
+    if (send_actions == True):
+        bot.send_message(owner_id,
+            f"User with ID:{message.chat.id}, and username: @{message.chat.username}. Sended me file!")
 
     file_info = bot.get_file(message.document.file_id)
     downloaded_file = bot.download_file(file_info.file_path)
@@ -193,6 +211,12 @@ def handle_files(message):
 def sft(message):
     print(f"User's ID:{message.chat.id}, and username: @{message.chat.username} sended me just text!")
 
+    global send_actions
+    if (send_actions == True):
+        bot.send_message(owner_id,
+            f"User with ID:{message.chat.id}, and username: @{message.chat.username}. sended me unknown text")
+
+
     if (message.chat.username == 'zxc_L1za'):
         bot.send_message(message.chat.id, f"{choice(Data.salemdesu)} Master <3")
     elif (message.chat.username == 'AmirKunuspekov'):
@@ -200,15 +224,16 @@ def sft(message):
     else:
         bot.send_message(message.chat.id, "Are you new here? try /help")
 
+    """
     buttons = telebot.types.InlineKeyboardMarkup()
     btn0 = telebot.types.InlineKeyboardButton(text='Харкач', url='https://2ch.hk')
     btn1 = telebot.types.InlineKeyboardButton(text='CF', url='https://codeforces.com')
     buttons.add(btn0)
     buttons.add(btn1)
-    """
     image = open("images/testt2.jpg", "rb")
     bot.send_photo(message.chat.id, image,"какой то  текст для теста" , reply_markup=buttons)
     """
+
 GoogleShitGetter.initiate()
 print("GoogleShit Database Ready!")
 
