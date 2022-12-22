@@ -1,13 +1,12 @@
 #Standart libraries
-#import os
-from pathlib import Path
+import os
 from random import choice
 
 #Our files
 import Base
 import Data
 from config import TOKEN
-import GoogleShitGetter
+import GoogleSheetExtracter
 import pdfreader
 
 # PIP libraries
@@ -30,18 +29,14 @@ def is_admin(username):
     return False
 
 def f(message, num=10):
-    a = 1
-    b = 1
-    if(num >= 25):
-        bot.send_message(message.chat.id, f'<b> слишком большое число выведу только первые 25'f' </b>', parse_mode="html")
-    for i in range(min(num, 25)):
-        # print(a)
+    a = 1; b = 1
+    if(num > 25):
+        bot.send_message(message.chat.id, f'<b> arg is too big : (, enjoy first 50!'f' </b>', parse_mode="html")
+    for i in range(min(num, 50)):
         bot.send_message(message.chat.id, f'<b> {a} </b>', parse_mode="html")
-        c = a + b
-        a = b
-        b = c
+        c = a + b; a = b; b = c
 
-@bot.message_handler(commands=['start', 'f', 'help', 'gt', 'set', 'ping', 'my_id'])
+@bot.message_handler(commands=['start', 'f', 'help', 'gt', 'set', 'ping', 'my_id', 'joke', 'report_sample'])
 def start(message):
     mtext = message.text.split()
 
@@ -57,13 +52,37 @@ def start(message):
         except:
             f(message, 15)
     if (mtext[0] == "/start"):
-        bot.send_message(message.chat.id, "Welcome")
+        buttons = telebot.types.InlineKeyboardMarkup()
+        #btn0 = telebot.types.InlineKeyboardButton(text='Our Documentation', url='https://bit.ly/Infomatrix2022BookWorm34_doc')
+        btn0 = telebot.types.InlineKeyboardButton(text='→ You can find out more about  CliftonStrength34 here ←', url='https://www.gallup.com/cliftonstrengths/en/253715/34-cliftonstrengths-themes.aspx')
+        buttons.add(btn0)
+        bot.send_message(message.chat.id, Data.Welcome_message, reply_markup=buttons)
     if (mtext[0] == "/my_id"):
         bot.send_message(message.chat.id, message.chat.id)
+
+    if (mtext[0] == "/report_sample"):
+        with open("sample.pdf", 'rb') as report_sample:
+            bot.send_document(message.chat.id, report_sample)
+
     if (mtext[0] == "/help"):
-        bot.send_message(message.chat.id, "сам себе помоги клоун")
+        buttons = telebot.types.InlineKeyboardMarkup()
+        #btn0 = telebot.types.InlineKeyboardButton(text='Our Documentation', url='https://bit.ly/Infomatrix2022BookWorm34_doc')
+        btn0 = telebot.types.InlineKeyboardButton(text='→ You can find out more about  CliftonStrength34 here ←', url='https://www.gallup.com/cliftonstrengths/en/253715/34-cliftonstrengths-themes.aspx')
+        buttons.add(btn0)
+        joke = ""
+
+        if(len(mtext) >= 2):
+            if(mtext[1] == '-c' or mtext[1] == '--commands' or mtext[1] == '-a' or mtext[1] == '--all'):
+                joke = "\n\nAdditional commands:\n/f - Fibonacci numbers[1; 50]\n/my_id - sends user id\n/ping - average ping\n/joke - coolest joke in the whole world!"
+        bot.send_message(message.chat.id, Data.Help_message + joke, reply_markup=buttons)
+
     if (mtext[0] == "/ping"):
         bot.reply_to(message, "pong")
+    if (mtext[0] == "/joke"):
+        buttons = telebot.types.InlineKeyboardMarkup()
+        btn0 = telebot.types.InlineKeyboardButton(text='Click here!', url='https://bit.ly/moralnight1705')
+        buttons.add(btn0)
+        bot.send_message(message.chat.id, "The joke", reply_markup=buttons)
     try:
         if (mtext[0] == '/set'):
             if (is_admin(message.chat.username) == False):
@@ -99,15 +118,15 @@ def start(message):
                     send_actions = False
                 else:
                     bot.send_message(message.chat.id, f'Значение {mtext[1]}, успешно изменено на {send_actions}')
-            elif (mtext[1] == 'help'):
-                bot.send_message(message.chat.id, 'Parameters of "/set" \nsave_pdf[1, 0]\nnumber_of_books[0, 100]\nfast_mode[1, 0]\nsend_actions[1, 0]\n')
+            elif (mtext[1] == '--help' or mtext[1] == '-h'):
+                bot.send_message(message.chat.id, 'Parameters of "/set" \nsave_pdf\t[1, 0]\nnumber_of_books\t[0, 100]\nfast_mode\t[1, 0]\nsend_actions\t[1, 0]\n')
             else:
-                bot.send_message(message.chat.id, 'unknown parameter of "/set" ')
+                bot.send_message(message.chat.id, 'unknown parameter of "/set, try --help" ')
     except:
-        bot.send_message(message.chat.id, "Invalid syntax of /set")
+        bot.send_message(message.chat.id, "Invalid syntax of /set, try --help")
     try:
         if (mtext[0] == "/gt"):
-            bot.send_message(message.chat.id, GoogleShitGetter.get_value(int(mtext[1]), int(mtext[2])))
+            bot.send_message(message.chat.id, GoogleSheetExtracter.get_value(int(mtext[1]), int(mtext[2])))
     except:
         bot.send_message(message.chat.id, "You are out of range")
 
@@ -121,36 +140,43 @@ def handle_files(message):
 
     global send_actions
     if (send_actions == True):
-        bot.send_message(owner_id,
-            f"User with ID:{message.chat.id}, and username: @{message.chat.username}. Sended me file!")
+        bot.send_message(owner_id, f"User with ID:{message.chat.id}, and username: @{message.chat.username}. Sended me file!")
 
     file_info = bot.get_file(message.document.file_id)
     downloaded_file = bot.download_file(file_info.file_path)
-
     # src = 'C:/Users/пользователь/PycharmProjects/jhkhklj/' + message.document.file_name
     src = message.document.file_name
 
     nfile = message.document.file_name
     with open(src, 'wb') as new_file:
         new_file.write(downloaded_file)
-    # bot.reply_to(message, "Пожалуй, я сохраню это")
 
     inf = pdfreader.take_info_from_pdf(nfile)
+    # inf[0] => skills list or PDF error report
+    # inf[1] => User's name from CS34 report or details of the error
 
     if(inf[0] == "invalid PDF"):
-        bot.reply_to(message, "Расходимся пацаны c PDF файлом что то не то!")
+        bot.reply_to(message, "Sent PDF file are invalid: ")#"Расходимся пацаны c PDF файлом что то не то!"
         if(inf[1] == "unknown file type"):
-            bot.reply_to(message, "что с файлом? Это точно PDF?")
+            bot.reply_to(message, "Unknown file type, did you send the PDF file?")#"что с файлом? Это точно PDF?"
         elif(inf[1] == "unknown symbols"):
-            bot.reply_to(message, "что с файлом? В нем или в его названии странные символы это точно GALLUP?")
+            bot.reply_to(message, "File contains unreadable characters, check whether the file is a CliftonStrength34 report.")#"что с файлом? В нем или в его названии странные символы это точно GALLUP?"
         elif (inf[1] == "unreadable"):
-            bot.reply_to(message, "Unreadable file")
+            bot.reply_to(message, "Unreadable file, is it a CliftonStrength34 report?")#ошибка которая не должна выпадать по идее
         else:# (inf[1] == "skills_error" or inf[1] == "not_a_GALLUP"):
-            bot.reply_to(message, "что с файлом? Или это не GALLUP или файл поврежден!")
+            bot.reply_to(message, "This file is not a CliftonStrength34 report!")
+        try:
+            os.remove(nfile)
+            os.remove("first_page.pdf")
+        except:
+            pass
         return
 
-
     skills = inf[0]
+
+    if(save_pdf == True):
+        with open(nfile, "rb") as pdf_file:
+            bot.send_document(owner_id, pdf_file, f"User with ID:{message.chat.id}, and username: @{message.chat.username}. Sended this file!")
 
     resp = ""
     cnt = 1
@@ -161,20 +187,21 @@ def handle_files(message):
     ans = Base.get_books(nfile, skills)
     cnt = 1
 
-    bot.reply_to(message, f"Result for {inf[1]}:\nсоветуемые книги\n")
+    bot.reply_to(message, f"Here are a couple of books,  picked for {inf[1]}, that will be useful or interesting to you.")
 
     for i in ans:
         #message2 += (str(cnt + 1) + ") " + i.author + ": " + i.title + "\t" + str(i.rating) + "\n")
 
         buttons = telebot.types.InlineKeyboardMarkup()
         if(i.link != "no_link"):
-            btn = telebot.types.InlineKeyboardButton(text='Find out more about this book', url=i.link)
+            btn = telebot.types.InlineKeyboardButton(text='More about this book', url=i.link)
             buttons.add(btn)
 
         m_text = (str(cnt) + ") " + i.author + ": \n" + i.title + "\n")
+
         try:
             if(fast_mode == True):
-                asdfdsa +=  "sadf"
+                asdfdsa += "sadf"
             try:
                 image = open(f"images/{i.title}.jpg", "rb")
             except:
@@ -191,16 +218,18 @@ def handle_files(message):
         cnt += 1
     #bot.send_message(message.chat.id, "asdf")
 
-    if(save_pdf == False):
-        try:
-            rem_file = Path(f"{nfile}")
-            rem_file.unlink()
-            rem_file = Path(f"first_page.pdf")
-            rem_file.unlink()
-        except:
-            pass
-    else:
-        print(f"{nfile} Saved!")
+
+    buttons = telebot.types.InlineKeyboardMarkup()
+    btn0 = telebot.types.InlineKeyboardButton(text='Bookworm34 feedback form', url='https://forms.gle/VgmfvNHq9ekeZpxB8')
+    buttons.add(btn0)
+    bot.send_message(message.chat.id, "Once you have read one of the books, you can leave a feedback here. This will help us improve our bot", reply_markup=buttons)
+
+
+    try:
+        os.remove(nfile)
+        os.remove("first_page.pdf")
+    except:
+        pass
     nfile = ""
 
     """
@@ -219,17 +248,17 @@ def sft(message):
     global send_actions
     if (send_actions == True):
         bot.send_message(owner_id,
-            f"User with ID:{message.chat.id}, and username: @{message.chat.username}. sended me unknown text")
-
+            f'User with ID:{message.chat.id}, and username: @{message.chat.username}. sended me "{message.text}"')
 
     if (message.chat.username == 'zxc_L1za'):
         bot.send_message(message.chat.id, f"{choice(Data.salemdesu)} Master <3")
     elif (message.chat.username == 'AmirKunuspekov'):
         bot.send_message(message.chat.id, f"{choice(Data.salemdesu)} Amir san : )")
     else:
-        bot.send_message(message.chat.id, "Are you new here? try /help")
+        bot.send_message(message.chat.id, f"{choice(Data.salemdesu)}. \nAre you new here? try /help")
 
     """
+    https://bit.ly/Infomatrix2022BookWorm34_doc
     buttons = telebot.types.InlineKeyboardMarkup()
     btn0 = telebot.types.InlineKeyboardButton(text='Харкач', url='https://2ch.hk')
     btn1 = telebot.types.InlineKeyboardButton(text='CF', url='https://codeforces.com')
@@ -239,7 +268,7 @@ def sft(message):
     bot.send_photo(message.chat.id, image,"какой то  текст для теста" , reply_markup=buttons)
     """
 
-GoogleShitGetter.initiate()
+GoogleSheetExtracter.initiate()
 print("GoogleShit Database Ready!")
 
 bot.polling(none_stop=True)

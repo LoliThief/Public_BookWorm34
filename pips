@@ -7,3 +7,5 @@ pip install borb
 pip install pdfminer2
 
 pip install pdfminer.six
+
+pip install PyPDF2

@@ -1,9 +1,8 @@
-random
 pdfminer
-borb
-google.oauth2
-googleapiclient
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib
 pdfminer2
 pdfminer.six
 pyTelegramBotAPI
-pathlib
+PyPDF2

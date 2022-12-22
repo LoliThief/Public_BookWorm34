@@ -1,9 +1,25 @@
 #Our files
-from GoogleShitGetter import get_value
+from GoogleSheetExtracter import get_value
 
 #from pdfreader import take_info_from_pdf
+#from operator import attrgetter
 
-from operator import attrgetter
+Number_of_books = 98
+
+def make_float(s):
+    res = s
+    if(s == ' '):
+        res = 0
+    if(s == "0,5"):
+        res = 0.5
+    if (s == "-0,5"):
+        res = -0.5
+    if (s == "-1, 1"):
+        res = 2
+    if (s == "1, -1"):
+        res = 2
+    return res
+
 skill_index = {
     "Achiever" : 0,
     "Arranger" : 1,
@@ -41,36 +57,17 @@ skill_index = {
     "Strategic" : 33,
 }
 
-Number_of_books = 98
-
 class Book:
-    # автор и название строки а рейтинг это число
+    # author is a string and the rating is a integer
     def __init__(self, Title, Author, Link):
         self.title = Title
         self.author = Author
+        self.disc = ""
         self.rating = float(0)
         if(Link != 0):
             self.link = Link
         else:
             self.link = "no_link"
-    """
-    def __repr__(self):
-        return repr((self.title, self.author, self.rating))
-    """
-
-def make_float(s):
-    res = s
-    if(s == ' '):
-        res = 0
-    if(s == "0,5"):
-        res = 0.5
-    if (s == "-0,5"):
-        res = -0.5
-    if (s == "-1, 1"):
-        res = 2
-    if (s == "1, -1"):
-        res = 2
-    return res
 
 def get_books(nfile, skills):
     library = []
@@ -112,31 +109,3 @@ def get_books(nfile, skills):
                     library[j].rating += i - 16
 
     return sorted(library, key=lambda x: x.rating, reverse=True)
-
-
-#resp =
-"""
-GoogleShitGetter.initiate()
-inf = take_info_from_pdf("test_el.pdf")
-skills = inf[0]
-cnt = 1;
-
-for i in get_books("test_el.pdf", skills):
-    #print(cnt, ":", i.title, ": ", i.author, "\t", i.link)
-    #print(i.link)
-    cnt += 1;
-"""
-#bk = Book("Мышинная ловушка", "Amir")
-""" Testing Book class
-dictinary = {
-    "Woo" : 1,
-    "Strategic" : -1,
-    "self" : 0.5,
-}
-
-test = Book("I AM", "Amir", dictinary)
-
-print(test.title)
-print(test.author)
-print(test.strengths["Woo"])
-"""
