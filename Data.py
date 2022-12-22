@@ -48,7 +48,4 @@ Click here to receive CliftonStrengths34 report sample
 To use BookWorm34 you need to have a CliftonStrengths Assessment, which you can learn more about by pressing the button under this message.
 """
 super_usernames = [
-    "lolithief",
-    "zxc_L1za",
-    "AmirKunuspekov",
 ]
