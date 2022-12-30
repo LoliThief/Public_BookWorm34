@@ -1,2 +1,0 @@
-#TOKEN = "1381943496:AAFZcoep3AmGYLvsl5jt8wOcrXGsFuDbGiM" #testing
-TOKEN = "5306978142:AAH5bzXIpKewLm6ez9SC6_gY7lUzBNT5jm8" #Actual
